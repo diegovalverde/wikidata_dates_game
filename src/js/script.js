@@ -4,12 +4,6 @@ const API_URL = `https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=
 const numberOfCards = 8;
 $( init );
 
-$(window).load(function(){
- $('.container').find('img').each(function(){
-  var imgClass = (this.width/this.height > 1) ? 'wide' : 'tall';
-  $(this).addClass(imgClass);
- })
-})
 
 function init() {
   queryWikiData();
@@ -118,14 +112,7 @@ function generateCard(mediaUri, cardName, dateOfEvent)
             revert: true
           } );
 
-          $('<div>' + dateOfEvent + '</div>')
-            .data( 'number', dateOfEvent )
-            .appendTo( '#cardSlots' )
-            .droppable( {
-              accept: '#cardPile div',
-              hoverClass: 'hovered',
-              drop: handleCardDrop
-          } );
+
 
       })
       .catch(function(error){console.log(error);});
@@ -145,9 +132,25 @@ function queryWikiData(){
 
   var cardName = 'foo'
   runQuery(query, results =>{
+    let dates = [];
       for (let result of results){
         let date = result.date.value.split('-');
+        dates.push(date[0]);
         generateCard(result.pic.value, result.itemLabel.value, date[0]);
+     }
+
+     //shuffle(dates);
+     dates.sort(function (a, b) { return 0.5 - Math.random() });
+
+     for (let date of dates ){
+       $('<div>' + date + '</div>')
+         .data( 'number', date )
+         .appendTo( '#cardSlots' )
+         .droppable( {
+           accept: '#cardPile div',
+           hoverClass: 'hovered',
+           drop: handleCardDrop
+       } );
      }
     });
 }
