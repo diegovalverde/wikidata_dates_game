@@ -108,7 +108,7 @@ function generateCard(mediaUri, cardName, dateOfEvent)
       .then(function(response) {
           var pages = response.query.pages;
           var imageUrl = pages[-1].imageinfo[0].url;
-          
+
           console.log(imageUrl);
 
 
@@ -118,7 +118,7 @@ function generateCard(mediaUri, cardName, dateOfEvent)
                   imageUrl +
                   '" width="128px" height="150px"/>' +
             '</div>')
-            .data( 'number', 0 )
+            .data( 'number', dateOfEvent )
         .attr( 'id', 'card' + '0' ).appendTo( '#cardPile' ).draggable( {
             containment: '#content',
             stack: '#cardPile div',
