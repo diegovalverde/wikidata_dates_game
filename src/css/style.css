@@ -28,7 +28,7 @@ h1, h2, h3, h4 {
 .wideBox {
   clear: both;
   text-align: center;
-  margin: 70px;
+  margin: 10px;
   padding: 10px;
   background: #ebedf2;
   border: 1px solid #333;
@@ -44,7 +44,7 @@ h1, h2, h3, h4 {
 /* Slots for final card positions */
 
 #cardSlots {
-  margin: 50px auto 0 auto;
+  margin: 5px auto 0 auto;
   background: #ddf;
 }
 
@@ -56,9 +56,9 @@ h1, h2, h3, h4 {
 }
 
 #cardSlots, #cardPile {
-  width: 910px;
-  height: 120px;
-  padding: 20px;
+  width: 1200px;
+  height: 150px;
+  padding: 5px;
   border: 2px solid #333;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
@@ -72,8 +72,8 @@ h1, h2, h3, h4 {
 
 #cardSlots div, #cardPile div {
   float: left;
-  width: 58px;
-  height: 78px;
+  width: 100px;
+  height: 128px;
   padding: 10px;
   padding-top: 40px;
   padding-bottom: 0;
