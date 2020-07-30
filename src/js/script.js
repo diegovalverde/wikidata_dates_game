@@ -31,7 +31,7 @@ function init() {
   var numbers = [ 1, 2, 3, 4, 5, 6, 7, 8];
   numbers.sort( function() { return Math.random() - .5 } );
 
-
+/*
   // Create the card slots
   var words = [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' ];
   for ( var i=1; i<=numberOfCards; i++ ) {
@@ -41,6 +41,7 @@ function init() {
       drop: handleCardDrop
     } );
   }
+  */
 
 }
 
@@ -86,7 +87,7 @@ function handleCardDrop(event, ui) {
 }
 
 
-function generateCard(mediaUri, cardName)
+function generateCard(mediaUri, cardName, dateOfEvent)
 {
   var imageName = mediaUri.split("FilePath/");
   var url = "https://en.wikipedia.org/w/api.php";
@@ -107,6 +108,7 @@ function generateCard(mediaUri, cardName)
       .then(function(response) {
           var pages = response.query.pages;
           var imageUrl = pages[-1].imageinfo[0].url;
+          
           console.log(imageUrl);
 
 
@@ -122,6 +124,15 @@ function generateCard(mediaUri, cardName)
             stack: '#cardPile div',
             cursor: 'move',
             revert: true
+          } );
+
+          $('<div>' + dateOfEvent + '</div>')
+            .data( 'number', dateOfEvent )
+            .appendTo( '#cardSlots' )
+            .droppable( {
+              accept: '#cardPile div',
+              hoverClass: 'hovered',
+              drop: handleCardDrop
           } );
 
       })
@@ -143,7 +154,8 @@ function queryWikiData(){
   var cardName = 'foo'
   runQuery(query, results =>{
       for (let result of results){
-        generateCard(result.pic.value, result.itemLabel.value);
+        let date = result.date.value.split('-');
+        generateCard(result.pic.value, result.itemLabel.value, date[0]);
      }
     });
 }

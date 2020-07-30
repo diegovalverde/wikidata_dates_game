@@ -57,7 +57,7 @@ h1, h2, h3, h4 {
 
 #cardSlots, #cardPile {
   width: 1100px;
-  height: 150px;
+  height: 180px;
   padding: 5px;
   border: 2px solid #333;
   -moz-border-radius: 10px;
