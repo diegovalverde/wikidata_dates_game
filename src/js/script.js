@@ -3,11 +3,13 @@ var correctCards = 0;
 const API_URL = `https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=`;
 const numberOfCards = 8;
 $( init );
-//
-// window.onload = function() {
-//   console.log("???");
-//
-// }
+
+$(window).load(function(){
+ $('.container').find('img').each(function(){
+  var imgClass = (this.width/this.height > 1) ? 'wide' : 'tall';
+  $(this).addClass(imgClass);
+ })
+})
 
 function init() {
   queryWikiData();
@@ -27,21 +29,7 @@ function init() {
   $('#cardPile').html( '' );
   $('#cardSlots').html( '' );
 
-  // Create the pile of shuffled cards
-  var numbers = [ 1, 2, 3, 4, 5, 6, 7, 8];
-  numbers.sort( function() { return Math.random() - .5 } );
 
-/*
-  // Create the card slots
-  var words = [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' ];
-  for ( var i=1; i<=numberOfCards; i++ ) {
-    $('<div>' + words[i-1] + '</div>').data( 'number', i ).appendTo( '#cardSlots' ).droppable( {
-      accept: '#cardPile div',
-      hoverClass: 'hovered',
-      drop: handleCardDrop
-    } );
-  }
-  */
 
 }
 
@@ -112,11 +100,15 @@ function generateCard(mediaUri, cardName, dateOfEvent)
           console.log(imageUrl);
 
 
-          $('<div>' +
-            cardName +
+          $('<div >' +
+
+
             '<img src="' +
                   imageUrl +
-                  '" width="128px" height="150px"/>' +
+                  //'" width="128px" height="150px" />' +
+                  '" />' +
+
+             cardName +
             '</div>')
             .data( 'number', dateOfEvent )
         .attr( 'id', 'card' + '0' ).appendTo( '#cardPile' ).draggable( {
