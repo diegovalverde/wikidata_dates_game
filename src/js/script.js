@@ -1,5 +1,5 @@
 var correctCards = 0;
-var deck = [];
+
 const API_URL = `https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=`;
 const numberOfCards = 8;
 $( init );
@@ -11,7 +11,6 @@ $( init );
 
 function init() {
   queryWikiData();
-  console.log("xxx???");
 
 
   // Hide the success message
@@ -29,24 +28,12 @@ function init() {
   $('#cardSlots').html( '' );
 
   // Create the pile of shuffled cards
-  var numbers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+  var numbers = [ 1, 2, 3, 4, 5, 6, 7, 8];
   numbers.sort( function() { return Math.random() - .5 } );
-  //
-  // for ( var i=0; i<10; i++ ) {
-  //   $('<div>' + '<img src=' +
-  //   deck[i] +
-  //   'width="128" height="128"/>' + '</div>')
-  //     .data( 'number', numbers[i] )
-  // .attr( 'id', 'card'+numbers[i] ).appendTo( '#cardPile' ).draggable( {
-  //     containment: '#content',
-  //     stack: '#cardPile div',
-  //     cursor: 'move',
-  //     revert: true
-  //   } );
-  // }
+
 
   // Create the card slots
-  var words = [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ];
+  var words = [ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' ];
   for ( var i=1; i<=numberOfCards; i++ ) {
     $('<div>' + words[i-1] + '</div>').data( 'number', i ).appendTo( '#cardSlots' ).droppable( {
       accept: '#cardPile div',
@@ -83,7 +70,7 @@ function handleCardDrop(event, ui) {
   //If all the cards have been placed correctly then
   //display a message and reset the cards for
   //another go
-  if (correctCards === 10) {
+  if (correctCards === numberOfCards) {
     $('#successMessage').show();
     $('#successMessage').animate({
       left: '380px',
@@ -98,20 +85,8 @@ function handleCardDrop(event, ui) {
 
 }
 
-function resolveWikiMediaImgUri(mediaUri){
-//https://en.wikipedia.org/w/api.php?action=query&titles=File:{}&prop=imageinfo&iiprop=url
-  var imageName = mediaUri.split("FilePath/");
 
-  var md5 = CryptoJS.MD5(imageName[1]).toString();
-  // see https://stackoverflow.com/questions/34393884/how-to-get-image-url-property-from-wikidata-item-by-api
-  var url = 'https://upload.wikimedia.org/wikipedia/commons/' +
-      md5[0] + '/' +
-      md5[0] + md5[1] + '/' + imageName[1];
-
-  return url;
-}
-
-function resolveWikiMediaImgUri2(mediaUri)
+function generateCard(mediaUri, cardName)
 {
   var imageName = mediaUri.split("FilePath/");
   var url = "https://en.wikipedia.org/w/api.php";
@@ -133,12 +108,13 @@ function resolveWikiMediaImgUri2(mediaUri)
           var pages = response.query.pages;
           var imageUrl = pages[-1].imageinfo[0].url;
           console.log(imageUrl);
-          //deck.push(pages[-1].imageinfo[0].url);
+
 
           $('<div>' +
+            cardName +
             '<img src="' +
                   imageUrl +
-                  '" width="128px" height="128px"/>' +
+                  '" width="128px" height="150px"/>' +
             '</div>')
             .data( 'number', 0 )
         .attr( 'id', 'card' + '0' ).appendTo( '#cardPile' ).draggable( {
@@ -152,34 +128,26 @@ function resolveWikiMediaImgUri2(mediaUri)
       .catch(function(error){console.log(error);});
 }
 
-
+//------------------------------------------------------------------------------
 function queryWikiData(){
   let query = `
-SELECT ?item ?itemLabel ?pic ?date
-WHERE
-{
-  ?item wdt:P31 wd:Q13418847.
-  ?item wdt:P18 ?pic.
-  ?item wdt:P585 ?date
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-} LIMIT 10
-  `;
-
-  runQuery(query, results =>
+    SELECT ?item ?itemLabel ?pic ?date
+    WHERE
     {
+      ?item wdt:P31 wd:Q13418847.
+      ?item wdt:P18 ?pic.
+      ?item wdt:P585 ?date
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+    } LIMIT ` + numberOfCards;
 
+  var cardName = 'foo'
+  runQuery(query, results =>{
       for (let result of results){
-        resolveWikiMediaImgUri2(result.pic.value);
+        generateCard(result.pic.value, result.itemLabel.value);
      }
-
-    }
-
-  );
-
+    });
 }
-
-
-
+//------------------------------------------------------------------------------
 //Credit: This function was taken from Blinry wonderful card generator game:
 //https://cardgame.morr.cc/
 function runQuery(query, callback) {
@@ -198,3 +166,4 @@ function runQuery(query, callback) {
         setStatus('An error occurred while running the query: "'+err+'"');
     });
 }
+//------------------------------------------------------------------------------
