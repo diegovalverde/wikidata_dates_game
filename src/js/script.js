@@ -106,7 +106,8 @@ function generateCard(mediaUri, cardName, dateOfEvent)
             revert: true
           } )
           .css({
-            'background-image': 'url('+imageUrl+')'
+            'background-image': 'url('+imageUrl+')',
+            'background-size': 'cover'
           });
 
 
