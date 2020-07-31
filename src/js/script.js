@@ -93,14 +93,8 @@ function generateCard(mediaUri, cardName, dateOfEvent)
 
           console.log(imageUrl);
 
+        $('<div class="card">' +
 
-          $('<div >' +
-
-
-            '<img src="' +
-                  imageUrl +
-                  //'" width="128px" height="150px" />' +
-                  '" />' +
 
              cardName +
             '</div>')
@@ -110,7 +104,10 @@ function generateCard(mediaUri, cardName, dateOfEvent)
             stack: '#cardPile div',
             cursor: 'move',
             revert: true
-          } );
+          } )
+          .css({
+            'background-image': 'url('+imageUrl+')'
+          });
 
 
 
