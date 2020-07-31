@@ -1,4 +1,5 @@
 var correctCards = 0;
+var attemptsLeft = 3;
 
 const API_URL = `https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=`;
 const numberOfCards = 8;
@@ -9,7 +10,6 @@ function init() {
   queryWikiData();
 
 
-  // Hide the success message
   $('#successMessage').hide();
   $('#successMessage').css( {
     left: '0px',
@@ -18,57 +18,14 @@ function init() {
     height: 0
   } );
 
-  // Reset the game
   correctCards = 0;
   $('#cardPile').html( '' );
   $('#cardSlots').html( '' );
 
 
-
 }
 
-function handleCardDrop(event, ui) {
-
-  //Grab the slot number and card number
-  var slotNumber = $(this).data('number');
-  var cardNumber = ui.draggable.data('number');
-
-  //If the cards was dropped to the correct slot,
-  //change the card colour, position it directly
-  //on top of the slot and prevent it being dragged again
-  if (slotNumber === cardNumber) {
-    ui.draggable.addClass('correct');
-    ui.draggable.draggable('disable');
-    $(this).droppable('disable');
-    ui.draggable.position({
-      of: $(this), my: 'left top', at: 'left top'
-    });
-    //This prevents the card from being
-    //pulled back to its initial position
-    //once it has been dropped
-    ui.draggable.draggable('option', 'revert', false);
-    correctCards++; //increment keep track correct cards
-  }
-
-  //If all the cards have been placed correctly then
-  //display a message and reset the cards for
-  //another go
-  if (correctCards === numberOfCards) {
-    $('#successMessage').show();
-    $('#successMessage').animate({
-      left: '380px',
-      top: '200px',
-      width: '400px',
-      height: '100px',
-      opacity: 1
-    });
-  }
-
-
-
-}
-
-
+//------------------------------------------------------------------------------
 function generateCard(mediaUri, cardName, dateOfEvent)
 {
   var imageName = mediaUri.split("FilePath/");
@@ -98,7 +55,7 @@ function generateCard(mediaUri, cardName, dateOfEvent)
 
              cardName +
             '</div>')
-            .data( 'number', dateOfEvent )
+            .data( 'year_of_event', dateOfEvent )
         .attr( 'id', 'card' + '0' ).appendTo( '#cardPile' ).draggable( {
             containment: '#content',
             stack: '#cardPile div',
@@ -126,23 +83,25 @@ function queryWikiData(){
       ?item wdt:P18 ?pic.
       ?item wdt:P585 ?date
       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-    } LIMIT ` + numberOfCards;
+    } LIMIT 100` ;
 
-  var cardName = 'foo'
+
+
   runQuery(query, results =>{
     let dates = [];
+    results.sort(function (a, b) { return 0.5 - Math.random() });
+    results.splice(0, results.length - numberOfCards);
       for (let result of results){
         let date = result.date.value.split('-');
         dates.push(date[0]);
         generateCard(result.pic.value, result.itemLabel.value, date[0]);
      }
 
-     //shuffle(dates);
      dates.sort(function (a, b) { return 0.5 - Math.random() });
 
      for (let date of dates ){
        $('<div>' + date + '</div>')
-         .data( 'number', date )
+         .data( 'year_of_event', date )
          .appendTo( '#cardSlots' )
          .droppable( {
            accept: '#cardPile div',
@@ -172,3 +131,37 @@ function runQuery(query, callback) {
     });
 }
 //------------------------------------------------------------------------------
+
+function handleCardDrop(event, ui) {
+
+  var slotNumber = $(this).data('year_of_event');
+  var cardNumber = ui.draggable.data('year_of_event');
+
+
+  if (slotNumber === cardNumber) {
+    ui.draggable.addClass('correct');
+    ui.draggable.draggable('disable');
+    $(this).droppable('disable');
+    ui.draggable.position({
+      of: $(this), my: 'left top', at: 'left top'
+    });
+
+    ui.draggable.draggable('option', 'revert', false);
+    correctCards++;
+  } else {
+    console.log('Nop');
+  }
+
+
+  if (correctCards === numberOfCards) {
+    $('#successMessage').show();
+    $('#successMessage').animate({
+      left: '380px',
+      top: '200px',
+      width: '400px',
+      height: '100px',
+      opacity: 1
+    });
+  }
+
+}
