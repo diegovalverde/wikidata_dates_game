@@ -139,7 +139,7 @@ function handleCardDrop(event, ui) {
 
 
   if (slotNumber === cardNumber) {
-    ui.draggable.addClass('correct');
+  
     ui.draggable.draggable('disable');
     $(this).droppable('disable');
     ui.draggable.position({

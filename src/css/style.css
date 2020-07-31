@@ -63,14 +63,14 @@ img{
 
 #cardSlots {
   margin: 5px auto 0 auto;
-  background: #ddf;
+  background: #fff;
 }
 
 /* The initial pile of unsorted cards */
 
 #cardPile {
   margin: 0 auto;
-  background: #ffd;
+  background: #fff;
 }
 
 #cardSlots, #cardPile {
@@ -128,18 +128,7 @@ img{
   box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
 }
 
-/* Individually coloured cards */
 
-#card1.correct { background: red; }
-#card2.correct { background: brown; }
-#card3.correct { background: orange; }
-#card4.correct { background: yellow; }
-#card5.correct { background: green; }
-#card6.correct { background: cyan; }
-#card7.correct { background: blue; }
-#card8.correct { background: indigo; }
-#card9.correct { background: purple; }
-#card10.correct { background: violet; }
 
 
 /* "You did it!" message */
