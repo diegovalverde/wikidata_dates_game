@@ -83,14 +83,15 @@ function generateCard(mediaUri, cardName, dateOfEvent, id)
 function queryWikiData(){
   //you can execute this query in: https://query.wikidata.org/
   let query = `
-    SELECT ?item ?itemLabel ?pic ?date
+    SELECT ?item ?itemLabel ?pic ?date (MD5(CONCAT(str(?item),str(RAND()))) as ?random)
     WHERE
     {
       ?item wdt:P31 wd:Q13418847.
       ?item wdt:P18 ?pic.
       ?item wdt:P585 ?date
       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-    } LIMIT 100` ;
+    } ORDER BY ?random
+    LIMIT 100` ;
 
 
 
@@ -110,7 +111,7 @@ function queryWikiData(){
      }
 
      //TODO: This sort is not working
-     dates.sort(function (a, b) { return 0.5 - Math.random() });
+     //dates.sort(function (a, b) { return 0.5 - Math.random() });
 
      for (let date of dates ){
        $('<div>' + date[0] + '</div>')
