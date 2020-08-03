@@ -183,8 +183,8 @@ function handleCardDrop(event, ui) {
             let wikipediaUrl =  'https://en.m.wikipedia.org/wiki/' + wikipediaTile.split(' ').join('_');
             console.log(wikipediaUrl);
             tippy('#card' + cardId.toString(), {
-                   placement: 'top',
-                   content: ' <div class="box"><iframe src="'+ wikipediaUrl + '" width = "500px" height = "500px"></iframe></div>  ',});
+                  // placement: 'top',
+                   content: ' <div class="box"><iframe src="'+ wikipediaUrl + '" width = "600px" height = "300px"></iframe></div>  ',});
           });
     //88888
 
