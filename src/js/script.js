@@ -1,7 +1,13 @@
+
+
+
 var correctCards = 0;
 var attemptsLeft = 3;
 
-const API_URL = `https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=`;
+
+
+const WIKIDATA_API_URL = `https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=`;
+const WIKIPEDIA_API_URL = "https://en.wikipedia.org/w/api.php";
 const numberOfCards = 8;
 $( init );
 
@@ -26,10 +32,9 @@ function init() {
 }
 
 //------------------------------------------------------------------------------
-function generateCard(mediaUri, cardName, dateOfEvent)
+function generateCard(mediaUri, cardName, dateOfEvent, id)
 {
   var imageName = mediaUri.split("FilePath/");
-  var url = "https://en.wikipedia.org/w/api.php";
 
   var params = {
       action: "query",
@@ -39,7 +44,7 @@ function generateCard(mediaUri, cardName, dateOfEvent)
       titles: "File:" + imageName[1]
   };
 
-  url = url + "?origin=*";
+  var url = WIKIPEDIA_API_URL + "?origin=*";
   Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
 
   fetch(url)
@@ -50,22 +55,23 @@ function generateCard(mediaUri, cardName, dateOfEvent)
 
           console.log(imageUrl);
 
-        $('<div class="card">' +
-
-
-             cardName +
+        $('<div class="card" >' +
+          cardName +
             '</div>')
             .data( 'year_of_event', dateOfEvent )
-        .attr( 'id', 'card' + '0' ).appendTo( '#cardPile' ).draggable( {
+            .data('card_id', id)
+        .attr( 'id', 'card' + id.toString() ).appendTo( '#cardPile' ).draggable( {
             containment: '#content',
             stack: '#cardPile div',
             cursor: 'move',
             revert: true
           } )
+
           .css({
             'background-image': 'url('+imageUrl+')',
             'background-size': 'cover'
           });
+
 
 
 
@@ -75,6 +81,7 @@ function generateCard(mediaUri, cardName, dateOfEvent)
 
 //------------------------------------------------------------------------------
 function queryWikiData(){
+  //you can execute this query in: https://query.wikidata.org/
   let query = `
     SELECT ?item ?itemLabel ?pic ?date
     WHERE
@@ -91,17 +98,24 @@ function queryWikiData(){
     let dates = [];
     results.sort(function (a, b) { return 0.5 - Math.random() });
     results.splice(0, results.length - numberOfCards);
+      let id = 0;
       for (let result of results){
+        console.log(result.item.value);
+
         let date = result.date.value.split('-');
-        dates.push(date[0]);
-        generateCard(result.pic.value, result.itemLabel.value, date[0]);
+        let qid = result.item.value.split('entity/');
+        dates.push([date[0], qid[1]]);
+        generateCard(result.pic.value, result.itemLabel.value, date[0],id);
+        id++;
      }
 
+     //TODO: This sort is not working
      dates.sort(function (a, b) { return 0.5 - Math.random() });
 
      for (let date of dates ){
-       $('<div>' + date + '</div>')
-         .data( 'year_of_event', date )
+       $('<div>' + date[0] + '</div>')
+         .data( 'year_of_event', date[0] )
+         .data('qid', date[1])
          .appendTo( '#cardSlots' )
          .droppable( {
            accept: '#cardPile div',
@@ -116,7 +130,7 @@ function queryWikiData(){
 //https://cardgame.morr.cc/
 function runQuery(query, callback) {
 
-    window.fetch(API_URL+query).then(
+    window.fetch(WIKIDATA_API_URL+query).then(
         function (response) {
             if (response.status !== 200) {
                 setStatus(`The query took too long or failed. This is probably a bug, let us know! (Status code: ${response.status})`);
@@ -136,18 +150,47 @@ function handleCardDrop(event, ui) {
 
   var slotNumber = $(this).data('year_of_event');
   var cardNumber = ui.draggable.data('year_of_event');
-
+  var cardId = ui.draggable.data('card_id');
 
   if (slotNumber === cardNumber) {
-  
+
     ui.draggable.draggable('disable');
     $(this).droppable('disable');
     ui.draggable.position({
       of: $(this), my: 'left top', at: 'left top'
     });
-
     ui.draggable.draggable('option', 'revert', false);
     correctCards++;
+
+    //88888
+
+    //https://www.wikidata.org/w/api.php?action=wbgetentities&format=xml&props=sitelinks&ids=Q19675
+    var params = {
+        action: "wbgetentities",
+        format: "json",
+        props: "sitelinks",
+        ids: $(this).data('qid'),
+        sitefilter: "enwiki"
+    };
+
+    var url = "https://www.wikidata.org/w/api.php"+ "?origin=*";
+    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+
+    fetch(url)
+        .then(function(response){return response.json();})
+        .then(function(response) {
+            let wikipediaTile = Object.values(response['entities'])[0]['sitelinks']['enwiki']['title'];
+            let wikipediaUrl =  'https://en.m.wikipedia.org/wiki/' + wikipediaTile.split(' ').join('_');
+            console.log(wikipediaUrl);
+            tippy('#card' + cardId.toString(), {
+                   placement: 'top',
+                   content: ' <div class="box"><iframe src="'+ wikipediaUrl + '" width = "500px" height = "500px"></iframe></div>  ',});
+          });
+    //88888
+
+
+
+
   } else {
     console.log('Nop');
   }
