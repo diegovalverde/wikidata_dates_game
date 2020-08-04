@@ -82,22 +82,24 @@ function generateCard(mediaUri, cardName, dateOfEvent, id)
 //------------------------------------------------------------------------------
 function queryWikiData(){
   //you can execute this query in: https://query.wikidata.org/
+  //wd:Q14208553
+  //wdt:P31/wdt:P279*
   let query = `
     SELECT ?item ?itemLabel ?pic ?date (MD5(CONCAT(str(?item),str(RAND()))) as ?random)
     WHERE
     {
-      ?item wdt:P31 wd:Q13418847.
+      ?item wdt:P31/wdt:P279* wd:Q13418847.
       ?item wdt:P18 ?pic.
       ?item wdt:P585 ?date
       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
     } ORDER BY ?random
-    LIMIT 100` ;
+    LIMIT 300` ;
 
 
 
   runQuery(query, results =>{
     let dates = [];
-    results.sort(function (a, b) { return 0.5 - Math.random() });
+      results.sort(function (a, b) { return 0.5 - Math.random() });
     results.splice(0, results.length - numberOfCards);
       let id = 0;
       for (let result of results){

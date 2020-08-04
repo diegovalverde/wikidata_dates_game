@@ -4,7 +4,7 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="js/script.js"> </script>
-    
+
  <!-- using tippy -->
   <!-- https://atomiks.github.io/tippyjs/v6/getting-started/ -->
 
@@ -19,13 +19,14 @@
   <h1> Tiny Wikidata History Game</h1>
   Drag and drop the events into thier corresponding date slots. <br>
   Data is randomly fetched from <a href="http://wikidata.org/">wikidata</a>.
+  <input id="clickMe" type="button" value="new deck" onclick="init();" />
 
   <div id="content">
   <div id="cardPile"></div>
   <div id="cardSlots"></div>
 
   <div id="successMessage">
-    <h2>You did it!</h2>
+    <h2>Well done!</h2>
     <button onclick="init()">Play Again!</button>
   </div>
 </div>
